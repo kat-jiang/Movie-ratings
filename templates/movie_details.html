@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }} - Details{% endblock %}
+
+{% block body %}
+  <h1>{{ movie.title }}</h1>
+
+  <p>
+    {{ movie.overview }}
+  </p>
+  <p>
+    <h2>Movie Ratings</h2>
+    <ul>
+      {% for rating in movie.ratings %}
+      <li>{{rating.score}}</li>
+      {% endfor %}
+    </ul>
+    <!-- <h2>Average Rating</h2> -->
+  </p>
+
+  <h2>Rate this movie(0-5)</h2>
+  <form action="/movie-rating" method="POST">
+    <p>
+      Rating <input type="number" id="rating_mv" name="mv_rating"
+      min="0" max="5">
+      <input type="hidden" name="{{ movie.movie_id }}">
+    </p>
+
+    <p>
+      <input type="submit">
+    </p>
+  </form>
+
+
+<img src="{{ movie.poster_path }}">
+{% endblock %}
