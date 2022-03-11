@@ -56,7 +56,7 @@ def register():
 
     user = crud.get_user_by_email(email)
     
-    if user == None: 
+    if user is None:
         new_user = crud.create_user(email, password)
         db.session.add(new_user)
         db.session.commit()
@@ -74,29 +74,34 @@ def login():
 
     user = crud.get_user_by_email(email)
     if user.password == password: 
-        session['user'] = user.user_id
-        flash("Logged in!")
-        
+        session['user'] = user.email
+        flash(f"Welcome back, {user.email}!")
     else: 
         flash("Sorry, passwords do not match!")
 
     return redirect("/")
 
-# @app.route("/movie-rating", methods=["POST"])
-# def add_movie_rating():
-#     """Add a movie rating"""
+@app.route("/movies/<movie_id>/ratings", methods=["POST"])
+def add_movie_rating(movie_id):
+    """Add a movie rating"""
 
-#     movie_rating = request.form.get("mv_rating")
-#     movie_id = request.form.get("{{movie.movie_id}}")
-#     movie = crud.get_movie_by_id(movie_id)
-#     current_userid = session['user']
-#     current_user = crud.get_user_by_id(current_userid)
+    movie_rating = request.form.get("mv_rating")
+    current_useremail = session.get('user')
+    
+    if current_useremail is None:
+        flash("You must log in to rate a movie.")
+    elif not movie_rating:
+        flash("Error: you didn't select a score for your rating.")
+    else:
+        
+        movie = crud.get_movie_by_id(movie_id)
+        current_user = crud.get_user_by_email(current_useremail)
 
-#     new_rating = crud.create_rating(movie_rating, movie, current_user)
-#     db.session.add(new_rating)
-#     db.session.commit()
+        new_rating = crud.create_rating(movie_rating, movie, current_user)
+        db.session.add(new_rating)
+        db.session.commit()
 
-#     return redirect('/movies/<movie_id>')
+    return redirect(f'/movies/{movie_id}')
 
 if __name__ == "__main__":
     # DebugToolbarExtension(app)
